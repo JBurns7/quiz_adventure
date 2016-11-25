@@ -2,21 +2,29 @@
 from random import randint
 health = 10
 poison_count = -1
+fire_potion = False
+mist_potion = False
+poison_true = False
 
 
 def poison():
     global poison_count
+    global poison_true
 
-    poison_count = poison_count - 1
+    if mist_potion == False:
+
+        poison_count = poison_count - 1
         
-    if poison_count == 2:
-        print("You start to feel woozy")
-    elif poison_count == 1:
-        print("You get a sharp pain in your chest")
-    elif poison_count == 0:
-        print("The mist from earlier was poison and you drop down dead")
-        print("Game Over")
-        quit()
+        if poison_count == 2:
+            print("You start to feel woozy")
+        elif poison_count == 1:
+            print("You get a sharp pain in your chest")
+        elif poison_count == 0:
+            print("The mist from earlier was poison and you drop down dead")
+            print("Game Over")
+            quit()
+
+    
 
     
 
@@ -48,7 +56,7 @@ def room1():
 
     if door.lower() == "l":
         print("You head to the iron door to your left")
-        burial_chamber()
+        armory()
 
 def dungeon():
     global health
@@ -134,6 +142,9 @@ def vault():
 def room2():
     global health
     global poison_count
+    global mist_potion
+    global fire_potion
+    global poison_true
 
     print("Strange symbols scatter the ground around you, each one leading to a different door")
     print("One Green, One red, One blue")
@@ -145,10 +156,15 @@ def room2():
     symbol = input("Symbol: ")
 
     if symbol.lower() == "g":
-        poison_count = 3
         print("A strange mist overcomes you but you feel normal")
-        print("You go onwards")
-        graveyard()
+        if mist_potion == True:
+            print("You remember your potion showing this room and drink it")
+            print("The mist disappears and you feel fine")
+            graveyard()
+        if mist_potion == False:
+            poison_count = 3
+            print("You go onwards")
+            graveyard()
 
     if symbol.lower() == "r":
         print("Fire spurts up into you")
@@ -159,13 +175,21 @@ def room2():
 
     if symbol.lower() == "b":
         print("Ice slowly overcomes your body")
-        print("You are frozen")
-        print("Game over")
-        quit()
+        if fire_potion == True:
+            print("You remember the fire potion and decide to drink it as this ice will kill you")
+            print("The ice melts and you go onwards")
+            ice_vault()
+        if fire_potion == False:
+            print("You are frozen")
+            print("Game over")
+            quit()
 
 def graveyard():
+    global poison_count
+    global poison_true
 
     poison()
+    
     print("Nothing is in the graveyard but a two doors")
     print("Do you enter")
     print("A. The Chapel Door")
@@ -174,8 +198,13 @@ def graveyard():
     door = input("Door: ")
 
     if door.lower() == "a":
-        print("You enter the chapel")
-        chapel()
+        if poison_count == -1:
+            print("There is a mysterious ward on the door and you can't get in")
+            print("You go into the butcher's")
+            butchers()
+        else:
+            print("You enter the chapel")
+            chapel()
 
     if door.lower() == "b":
         print("You enter the butchers")
@@ -241,12 +270,13 @@ def butchers():
 def arena():
     boss_hp = 10
     global health
+    poison()
 
-    print("You approach a towering gate and as you reach the centre the gate opens")
+    print("You approach a towering gate and as you reach the center the gate opens")
     print("You walk through the now open gate into the center of the room")
     print("You hear lots of cheering and look around")
     print("It seems like you are in some kind of colosseum")
-    print("A crowd member throws a sword toyour hand and says")
+    print("A crowd member throws a sword to your hand and says")
     print("Get prepared here it comes")
     print("Another gate opens and a skeletal collosal emerges")
     print("You need to fight")
@@ -255,6 +285,15 @@ def arena():
     print("R. Run at him")
 
     battle_choice = input("Battle Choice: ")
+
+    if battle_choice.lower() == "w":
+        print("You wait for the brute to reach you but he stays still")
+        print("Everything goes silent")
+        print("You pass out")
+        print("You wake up in an open field outside")
+        print("You have escaped the nightmare")
+        print("Good Ending")
+        quit()
 
     if battle_choice.lower() == "r":
         print("You run at the collosal")
@@ -268,9 +307,46 @@ def arena():
         if battle_choice.lower() == "s":
             print("You chop both his arms off in one swoop but he kicks you back")
             health = health - 4
-            print(health)
+            print("Health: " ,health)
             boss_hp = boss_hp - 5
-            #Need to continue this fight tree and the wait fight tree
+            print("You feel immense pain but stand back up")
+            print("Do you...")
+            print("F. Flee back to the butchers")
+            print("C. Charge towards the monster")
+
+            battle_choice = input("Battle Choice: ")
+
+            if battle_choice.lower() == "c":
+                print("Yet again the skeleton hits you and you can't avoid")
+                print("That is it for you")
+                print("As light fades the skeleton approaches you and carries you to the butchers")
+                print("The butcher cuts you open, but you still stay alive")
+                print("Just as he is about to pull out your intestines you hear a bang")
+                print("The whole roof caves in everybody dies")
+                print("Game Over")
+                quit()
+
+            if battle_choice.lower() == "f":
+                print("You slowly back into the butchers")
+                print("Do you...")
+                print("C. Chop the butcher's chain off")
+                print("B. Back away more")
+
+                battle_choice = input("Battle Choice: ")
+
+                if battle_choice.lower() == "c":
+                    print("When you chop the butcher's chain in half he progresses to grab you")
+                    print("He slices you in half")
+                    print("Game Over")
+                    quit()
+
+                if battle_choice.lower() == "b":
+                    print("The butcher grabs the skeleton's skull and crushes it with it's bear hands")
+                    print("The collosal is dead")
+                    print("You now return to the arena and you see another gate is open")
+                    print("You progress")
+                    treasure_room()
+            
 
         if battle_choice.lower() == "h":
             print("You chop the beast's legs of and he lies flat on the floor")
@@ -287,7 +363,86 @@ def arena():
             if battle_choice.lower() == "h":
                 print("You end up hitting his heart and he falls dead you can progress to the treasure room")
                 treasure_room()
-                #Finish tree
+                
+
+        if battle_choice.lower() == "s":
+            print("You strike his skull with the sword but his head is too strong")
+            print("The sword bounces back up and hits you in the neck")
+            health = health - 7
+            if health == 0:
+                print("You have died")
+                print("Game Over")
+                quit()
+            else:
+                print("You instantly strike through his chest in a pain induced rage")
+                print("He dies and you can now progress")
+                print("A hidden hole in the arena opens and an announcer speaks to you")
+                print("He has did it, the first person to not only survive but defeat the skelton in the hidden way")
+                print("Enjoy the greatest treasure the crypt has to give")
+                secret_treasure()
+
+
+def treasure_room():
+
+    print("You have reached the fruit of your troubles")
+    print("Treasure chests as far as you can see litter the floor")
+    print("Good Ending")
+    print("Treasure Value: $72,000")
+    quit()
+
+def secret_treasure():
+
+    print("Due to you completeing the hidden task the golden monkey stands above you")
+    print("It is the most renown treasure never to be found")
+    print("Until now")
+    print("Secret Ending")
+    print("Treasure Value: $1,000,000,000")
+    quit()
+
+def armory():
+    global mist_potion
+    global fire_potion
+
+    print("When you enter the room you see three potions")
+    print("One with a picture of fire on a human")
+    print("Another showing a room covered in green mist")
+    print("The final has no label")
+    print("Which do you take")
+    print("A. Fire Potion")
+    print("B. Mist Potion")
+    print("C. Mystery Potion")
+
+    potion = input("Potion: ")
+
+    if potion.lower() == "a":
+        fire_potion = True
+        print("With your fire potion you return to the first room")
+        room1()
+
+    if potion.lower() == "b":
+        mist_potion = True
+        print("With your mist potion you return to the first room")
+        room1()
+
+    if potion.lower() == "c":
+        print("You decide to drink the mystery potion")
+        print("Nothing Happens")
+        print("You go back to the first room")
+        room1()
+
+def ice_vault():
+
+    print("You enter a vault of snow with treasure all around")
+    print("You take the treasure and leave")
+    print("Good Ending")
+    print("Treasure Value: $10,000")
+    quit()
+          
+
+    
+        
+                
+                  
             
 
         
